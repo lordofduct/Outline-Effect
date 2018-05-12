@@ -23,7 +23,6 @@
 */
 
 using UnityEngine;
-using System.Linq;
 using System.Collections.Generic;
 
 namespace cakeslice
@@ -32,38 +31,50 @@ namespace cakeslice
     [RequireComponent(typeof(Renderer))]
     public class Outline : MonoBehaviour
     {
-        public Renderer Renderer { get; private set; }
+
+        #region Multiton Pool
+
+        public static readonly HashSet<Outline> Pool = new HashSet<Outline>();
+
+        #endregion
+
+        #region Fields
 
         public int color;
         public bool eraseRenderer;
 
+        #endregion
+
+        #region CONSTRUCTOR
+
         private void Awake()
         {
-            Renderer = GetComponent<Renderer>();
+            this.Renderer = this.GetComponent<Renderer>();
+            this.SkinnedMeshRenderer = this.GetComponent<SkinnedMeshRenderer>();
+            this.MeshFilter = this.GetComponent<MeshFilter>();
         }
 
         void OnEnable()
         {
-			IEnumerable<OutlineEffect> effects = Camera.allCameras.AsEnumerable()
-				.Select(c => c.GetComponent<OutlineEffect>())
-				.Where(e => e != null);
-
-			foreach (OutlineEffect effect in effects)
-            {
-                effect.AddOutline(this);
-            }
+            Pool.Add(this);
         }
 
         void OnDisable()
         {
-			IEnumerable<OutlineEffect> effects = Camera.allCameras.AsEnumerable()
-				.Select(c => c.GetComponent<OutlineEffect>())
-				.Where(e => e != null);
-
-			foreach (OutlineEffect effect in effects)
-            {
-                effect.RemoveOutline(this);
-            }
+            Pool.Remove(this);
         }
+
+        #endregion
+
+        #region Properties
+
+        public Renderer Renderer { get; private set; }
+
+        public SkinnedMeshRenderer SkinnedMeshRenderer { get; private set; }
+
+        public MeshFilter MeshFilter { get; private set; }
+
+        #endregion
+
     }
 }
