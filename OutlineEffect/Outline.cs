@@ -23,47 +23,80 @@
 */
 
 using UnityEngine;
-using System.Linq;
 using System.Collections.Generic;
 
-namespace cakeslice
+namespace com.cakeslice
 {
     [ExecuteInEditMode]
     [RequireComponent(typeof(Renderer))]
     public class Outline : MonoBehaviour
     {
-        public Renderer Renderer { get; private set; }
 
-        public int color;
+        #region Multiton Pool
+
+        public static readonly HashSet<Outline> Pool = new HashSet<Outline>();
+
+        #endregion
+
+        #region Fields
+
+        [UnityEngine.Serialization.FormerlySerializedAs("color")]
+        public OutlineEffect.OutlinePreset presetColor;
         public bool eraseRenderer;
+
+        [System.NonSerialized]
+        private Material[] _materials;
+
+        #endregion
+
+        #region CONSTRUCTOR
 
         private void Awake()
         {
-            Renderer = GetComponent<Renderer>();
+            this.Renderer = this.GetComponent<Renderer>();
+            this.SkinnedMeshRenderer = this.GetComponent<SkinnedMeshRenderer>();
+            this.MeshFilter = this.GetComponent<MeshFilter>();
         }
 
         void OnEnable()
         {
-			IEnumerable<OutlineEffect> effects = Camera.allCameras.AsEnumerable()
-				.Select(c => c.GetComponent<OutlineEffect>())
-				.Where(e => e != null);
-
-			foreach (OutlineEffect effect in effects)
-            {
-                effect.AddOutline(this);
-            }
+            Pool.Add(this);
         }
 
         void OnDisable()
         {
-			IEnumerable<OutlineEffect> effects = Camera.allCameras.AsEnumerable()
-				.Select(c => c.GetComponent<OutlineEffect>())
-				.Where(e => e != null);
-
-			foreach (OutlineEffect effect in effects)
-            {
-                effect.RemoveOutline(this);
-            }
+            Pool.Remove(this);
         }
+
+        #endregion
+
+        #region Properties
+
+        public Renderer Renderer { get; private set; }
+
+        public SkinnedMeshRenderer SkinnedMeshRenderer { get; private set; }
+
+        public MeshFilter MeshFilter { get; private set; }
+
+        #endregion
+
+        #region Methods
+
+        public void ClearMaterialCache()
+        {
+            _materials = null;
+        }
+
+        public Material[] GetMaterials()
+        {
+            if(_materials == null)
+            {
+                _materials = this.Renderer.sharedMaterials;
+            }
+            return _materials;
+        }
+
+        #endregion
+
     }
 }
