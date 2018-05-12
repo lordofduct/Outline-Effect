@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
-using cakeslice;
+using com.cakeslice;
 
-namespace cakeslice
+namespace com.cakeslice
 {
     public class Rotate : MonoBehaviour
     {
