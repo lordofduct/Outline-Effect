@@ -18,7 +18,7 @@ namespace cakeslice
         // Update is called once per frame
         void Update()
         {
-            Color c = GetComponent<OutlineEffect>().lineColor0;
+            Color c = GetComponent<OutlineEffect>().lineColorA;
 
             if(pingPong)
             {
@@ -36,7 +36,7 @@ namespace cakeslice
             }
 
             c.a = Mathf.Clamp01(c.a);
-            GetComponent<OutlineEffect>().lineColor0 = c;
+            GetComponent<OutlineEffect>().lineColorA = c;
             GetComponent<OutlineEffect>().UpdateMaterialsPublicProperties();
         }
     }

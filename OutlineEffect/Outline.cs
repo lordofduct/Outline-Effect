@@ -40,8 +40,12 @@ namespace cakeslice
 
         #region Fields
 
-        public int color;
+        [UnityEngine.Serialization.FormerlySerializedAs("color")]
+        public OutlineEffect.OutlinePreset presetColor;
         public bool eraseRenderer;
+
+        [System.NonSerialized]
+        private Material[] _materials;
 
         #endregion
 
@@ -73,6 +77,24 @@ namespace cakeslice
         public SkinnedMeshRenderer SkinnedMeshRenderer { get; private set; }
 
         public MeshFilter MeshFilter { get; private set; }
+
+        #endregion
+
+        #region Methods
+
+        public void ClearMaterialCache()
+        {
+            _materials = null;
+        }
+
+        public Material[] GetMaterials()
+        {
+            if(_materials == null)
+            {
+                _materials = this.Renderer.sharedMaterials;
+            }
+            return _materials;
+        }
 
         #endregion
 
