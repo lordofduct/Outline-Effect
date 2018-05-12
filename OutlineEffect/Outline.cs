@@ -40,7 +40,8 @@ namespace cakeslice
 
         #region Fields
 
-        public int color;
+        [UnityEngine.Serialization.FormerlySerializedAs("color")]
+        public OutlineEffect.OutlinePreset presetColor;
         public bool eraseRenderer;
 
         [System.NonSerialized]

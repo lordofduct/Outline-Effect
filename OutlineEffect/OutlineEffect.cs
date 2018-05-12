@@ -35,6 +35,13 @@ namespace cakeslice
     public class OutlineEffect : MonoBehaviour
     {
 
+        public enum OutlinePreset
+        {
+            A = 0,
+            B = 1,
+            C = 2
+        }
+
         #region Fields
 
         [Range(1.0f, 6.0f)]
@@ -44,9 +51,12 @@ namespace cakeslice
         [Range(0, 1)]
         public float fillAmount = 0.2f;
 
-        public Color lineColor0 = Color.red;
-        public Color lineColor1 = Color.green;
-        public Color lineColor2 = Color.blue;
+        [UnityEngine.Serialization.FormerlySerializedAs("lineColor0")]
+        public Color lineColorA = Color.red;
+        [UnityEngine.Serialization.FormerlySerializedAs("lineColor1")]
+        public Color lineColorB = Color.green;
+        [UnityEngine.Serialization.FormerlySerializedAs("lineColor2")]
+        public Color lineColorC = Color.blue;
 
         public bool additiveRendering = false;
 
@@ -123,14 +133,19 @@ namespace cakeslice
 
         #region Methods
 
-        Material GetMaterialFromID(int ID)
+        Material GetMaterialFromID(OutlinePreset id)
         {
-            if (ID == 0)
-                return _outline1Material;
-            else if (ID == 1)
-                return _outline2Material;
-            else
-                return _outline3Material;
+            switch(id)
+            {
+                case OutlinePreset.A:
+                    return _outline1Material;
+                case OutlinePreset.B:
+                    return _outline2Material;
+                case OutlinePreset.C:
+                    return _outline3Material;
+                default:
+                    return _outline1Material;
+            }
         }
 
         Material CreateMaterial(Color emissionColor)
@@ -150,10 +165,10 @@ namespace cakeslice
         private void CreateMaterialsIfNeeded()
         {
             if (_outlineShader == null)
-                _outlineShader = Resources.Load<Shader>("OutlineShader");
+                _outlineShader = Resources.Load<Shader>("CakesliceOutlineShader");
             if (_outlineBufferShader == null)
             {
-                _outlineBufferShader = Resources.Load<Shader>("OutlineBufferShader");
+                _outlineBufferShader = Resources.Load<Shader>("CakesliceOutlineBufferShader");
             }
             if (_outlineShaderMaterial == null)
             {
@@ -223,9 +238,9 @@ namespace cakeslice
 
                 _outlineShaderMaterial.SetFloat("_LineIntensity", lineIntensity);
                 _outlineShaderMaterial.SetFloat("_FillAmount", fillAmount);
-                _outlineShaderMaterial.SetColor("_LineColor1", lineColor0 * lineColor0);
-                _outlineShaderMaterial.SetColor("_LineColor2", lineColor1 * lineColor1);
-                _outlineShaderMaterial.SetColor("_LineColor3", lineColor2 * lineColor2);
+                _outlineShaderMaterial.SetColor("_LineColor1", lineColorA * lineColorA);
+                _outlineShaderMaterial.SetColor("_LineColor2", lineColorB * lineColorB);
+                _outlineShaderMaterial.SetColor("_LineColor3", lineColorC * lineColorC);
                 if (flipY)
                     _outlineShaderMaterial.SetInt("_FlipY", 1);
                 else
@@ -283,7 +298,7 @@ namespace cakeslice
                                     if (outline.eraseRenderer)
                                         m = new Material(_outlineEraseMaterial);
                                     else
-                                        m = new Material(GetMaterialFromID(outline.color));
+                                        m = new Material(GetMaterialFromID(outline.presetColor));
                                     m.mainTexture = arr[v].mainTexture;
                                     _materialBuffer[id] = m;
                                 }
@@ -293,7 +308,7 @@ namespace cakeslice
                                 if (outline.eraseRenderer)
                                     m = _outlineEraseMaterial;
                                 else
-                                    m = GetMaterialFromID(outline.color);
+                                    m = GetMaterialFromID(outline.presetColor);
                             }
 
                             if (backfaceCulling)
