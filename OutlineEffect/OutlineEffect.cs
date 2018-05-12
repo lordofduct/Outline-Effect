@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using UnityEngine.Rendering;
 using UnityEngine.VR;
 
-namespace cakeslice
+namespace com.cakeslice
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Camera))]

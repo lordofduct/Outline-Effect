@@ -25,7 +25,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace cakeslice
+namespace com.cakeslice
 {
     [ExecuteInEditMode]
     [RequireComponent(typeof(Renderer))]
