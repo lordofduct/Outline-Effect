@@ -75,7 +75,7 @@ namespace com.cakeslice
 
 
 
-        
+
         private Material _outline1Material;
         private Material _outline2Material;
         private Material _outline3Material;
@@ -85,7 +85,7 @@ namespace com.cakeslice
         private Material _outlineShaderMaterial;
         private RenderTexture _renderTexture;
         private RenderTexture _extraRenderTexture;
-        
+
         private Dictionary<int, Material> _materialBuffer = new Dictionary<int, Material>();
 
         #endregion
@@ -109,17 +109,6 @@ namespace com.cakeslice
             _extraRenderTexture = new RenderTexture(sourceCamera.pixelWidth, sourceCamera.pixelHeight, 16, RenderTextureFormat.Default);
         }
 
-        private void OnEnable()
-        {
-            Outline[] o = FindObjectsOfType<Outline>();
-
-            foreach (Outline oL in o)
-            {
-                oL.enabled = false;
-                oL.enabled = true;
-            }
-        }
-
         void OnDestroy()
         {
             if (_renderTexture != null)
@@ -127,6 +116,8 @@ namespace com.cakeslice
             if (_extraRenderTexture != null)
                 _extraRenderTexture.Release();
             DestroyMaterials();
+
+            OutlineCamera.DestroyCamera();
         }
 
         #endregion
@@ -135,7 +126,7 @@ namespace com.cakeslice
 
         Material GetMaterialFromID(OutlinePreset id)
         {
-            switch(id)
+            switch (id)
             {
                 case OutlinePreset.A:
                     return _outline1Material;
@@ -257,7 +248,7 @@ namespace com.cakeslice
                 Shader.SetGlobalFloat("_OutlineAlphaCutoff", alphaCutoff);
             }
         }
-        
+
         #endregion
 
         #region Messages
@@ -370,11 +361,20 @@ namespace com.cakeslice
 
             public static OutlineCamera GetCamera()
             {
-                if(_instance == null)
+                if (_instance == null)
                 {
                     _instance = (new GameObject("Outline Camera")).AddComponent<OutlineCamera>();
                 }
                 return _instance;
+            }
+
+            public static void DestroyCamera()
+            {
+                if(_instance != null)
+                {
+                    Object.Destroy(_instance);
+                    _instance = null;
+                }
             }
 
             #endregion

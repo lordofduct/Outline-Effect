@@ -89,7 +89,7 @@ namespace com.cakeslice
 
         public Material[] GetMaterials()
         {
-            if(_materials == null)
+            if (_materials == null)
             {
                 _materials = this.Renderer.sharedMaterials;
             }
